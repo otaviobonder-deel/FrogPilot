@@ -38,6 +38,13 @@ def get_remote_file_size(url):
     print(f"Error fetching file size: {e}")
     return None
 
+def process_model_name(model_name):
+  model_cleaned = re.sub(r'[🗺️👀📡]', '', model_name).strip()
+  score_param = re.sub(r'[^a-zA-Z0-9()-]', '', model_cleaned).replace(' ', '').strip().replace('(Default)', '').replace('-', '')
+  cleaned_name = ''.join(score_param.split())
+  print(f'Processed Model Name: {cleaned_name}')
+  return cleaned_name
+
 def handle_download_error(destination, error_message, error, params_memory):
   print(f"Error occurred: {error}")
   params_memory.put("ModelDownloadProgress", error_message)
@@ -127,7 +134,7 @@ def fetch_models(url):
     print(f"Failed to update models list. Error: {e}")
     return None
 
-def are_all_models_downloaded(available_models, repo_url, params, params_memory):
+def are_all_models_downloaded(available_models, available_model_names, repo_url, params, params_memory):
   automatically_update_models = params.get_bool("AutomaticallyUpdateModels")
   all_models_downloaded = True
 
@@ -143,6 +150,9 @@ def are_all_models_downloaded(available_models, repo_url, params, params_memory)
         if remote_file_size is not None and remote_file_size != local_file_size:
           print(f"Model {model} is outdated. Local size: {local_file_size}, Remote size: {remote_file_size}. Re-downloading...")
           delete_file(model_path)
+          part_model_param = process_model_name(available_model_names[available_models.index(model)])
+          params.remove(part_model_param + "CalibrationParams")
+          params.remove(part_model_param + "LiveTorqueParameters")
           while params_memory.get("ModelToDownload", encoding='utf-8') is not None:
             time.sleep(1)
           params_memory.put("ModelToDownload", model)
@@ -153,6 +163,9 @@ def are_all_models_downloaded(available_models, repo_url, params, params_memory)
           time.sleep(1)
         print(f"Model {model} is missing. Re-downloading...")
         params_memory.put("ModelToDownload", model)
+        part_model_param = process_model_name(available_model_names[available_models.index(model)])
+        params.remove(part_model_param + "CalibrationParams")
+        params.remove(part_model_param + "LiveTorqueParameters")
       all_models_downloaded = False
 
   return all_models_downloaded
@@ -172,7 +185,7 @@ def update_model_params(model_info, is_release, repo_url, params, params_memory)
   print("Models list updated successfully.")
 
   if available_models is not None:
-    params.put_bool_nonblocking("ModelsDownloaded", are_all_models_downloaded(available_models, repo_url, params, params_memory))
+    params.put_bool_nonblocking("ModelsDownloaded", are_all_models_downloaded(available_models, available_model_names, repo_url, params, params_memory))
 
 def validate_models(params):
   current_model = params.get("Model", encoding='utf-8')

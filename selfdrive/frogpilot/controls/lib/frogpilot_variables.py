@@ -1,6 +1,5 @@
 import os
 import random
-import re
 
 from types import SimpleNamespace
 
@@ -11,18 +10,11 @@ from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from openpilot.system.version import get_build_metadata
 
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import MODELS_PATH
-from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, NAVIGATION_MODELS, RADARLESS_MODELS, STAGING_MODELS
+from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, NAVIGATION_MODELS, RADARLESS_MODELS, STAGING_MODELS, process_model_name
 
 CITY_SPEED_LIMIT = 25  # 55mph is typically the minimum speed for highways
 CRUISING_SPEED = 5     # Roughly the speed cars go when not touching the gas while in drive
 PROBABILITY = 0.6      # 60% chance of condition being true
-
-def process_model_name(model_name):
-  model_cleaned = re.sub(r'[🗺️👀📡]', '', model_name).strip()
-  score_param = re.sub(r'[^a-zA-Z0-9()-]', '', model_cleaned).replace(' ', '').strip().replace('(Default)', '').replace('-', '')
-  cleaned_name = ''.join(score_param.split())
-  print(f'Processed Model Name: {cleaned_name}')
-  return cleaned_name
 
 class FrogPilotVariables:
   def __init__(self):
