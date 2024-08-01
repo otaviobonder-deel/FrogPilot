@@ -68,6 +68,7 @@ class CarState(CarStateBase):
     self.lkas_hud = {}
 
     # FrogPilot variables
+    self.lkas_status = False
     self.zss_compute = False
     self.zss_cruise_active_last = False
 
@@ -223,8 +224,9 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint != CAR.TOYOTA_PRIUS_V:
       self.lkas_previously_enabled = self.lkas_enabled
-      message_keys = ["LDA_ON_MESSAGE", "SET_ME_X02"]
-      self.lkas_enabled = any(self.lkas_hud.get(key) == 1 for key in message_keys)
+      self.lkas_status_previous = self.lkas_status
+      self.lkas_status = self.lkas_hud.get("SET_ME_X02") == 1 or self.lkas_hud.get("LKAS_STATUS") == 1
+      self.lkas_enabled = self.lkas_status != self.lkas_status_previous
 
     self.pcm_accel_net = cp.vl["PCM_CRUISE"]["ACCEL_NET"]
     self.pcm_neutral_force = cp.vl["PCM_CRUISE"]["NEUTRAL_FORCE"]

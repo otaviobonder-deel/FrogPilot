@@ -253,11 +253,6 @@ static void update_state(UIState *s) {
     auto deviceState = sm["deviceState"].getDeviceState();
     scene.online = deviceState.getNetworkType() != cereal::DeviceState::NetworkType::NONE;
   }
-  if (sm.updated("frogpilotCarControl")) {
-    auto frogpilotCarControl = sm["frogpilotCarControl"].getFrogpilotCarControl();
-    scene.always_on_lateral_active = !scene.enabled && frogpilotCarControl.getAlwaysOnLateral();
-    scene.speed_limit_changed = scene.speed_limit_controller && frogpilotCarControl.getSpeedLimitChanged();
-  }
   if (sm.updated("frogpilotCarState")) {
     auto frogpilotCarState = sm["frogpilotCarState"].getFrogpilotCarState();
     scene.brake_lights_on = frogpilotCarState.getBrakeLights();
@@ -268,6 +263,7 @@ static void update_state(UIState *s) {
     scene.acceleration_jerk = frogpilotPlan.getAccelerationJerk();
     scene.acceleration_jerk_difference = frogpilotPlan.getAccelerationJerkStock() - scene.acceleration_jerk;
     scene.adjusted_cruise = frogpilotPlan.getAdjustedCruise();
+    scene.always_on_lateral_active = !scene.enabled && frogpilotPlan.getAlwaysOnLateralActive ();
     scene.desired_follow = frogpilotPlan.getDesiredFollowDistance();
     scene.lane_width_left = frogpilotPlan.getLaneWidthLeft();
     scene.lane_width_right = frogpilotPlan.getLaneWidthRight();
@@ -277,6 +273,7 @@ static void update_state(UIState *s) {
     scene.speed_jerk = frogpilotPlan.getSpeedJerk();
     scene.speed_jerk_difference = frogpilotPlan.getSpeedJerkStock() - scene.speed_jerk;
     scene.speed_limit = frogpilotPlan.getSlcSpeedLimit();
+    scene.speed_limit_changed = scene.speed_limit_controller && frogpilotPlan.getSpeedLimitChanged();
     scene.speed_limit_offset = frogpilotPlan.getSlcSpeedLimitOffset();
     scene.speed_limit_overridden = frogpilotPlan.getSlcOverridden();
     scene.speed_limit_overridden_speed = frogpilotPlan.getSlcOverriddenSpeed();
@@ -494,8 +491,7 @@ UIState::UIState(QObject *parent) : QObject(parent) {
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState",
     "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
     "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan", "clocks",
-    "carControl", "liveTorqueParameters",
-    "frogpilotCarControl", "frogpilotCarState", "frogpilotDeviceState", "frogpilotPlan",
+    "carControl", "liveTorqueParameters", "frogpilotCarState", "frogpilotDeviceState", "frogpilotPlan",
   });
 
   Params params;
