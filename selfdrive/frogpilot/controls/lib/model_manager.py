@@ -110,18 +110,19 @@ def download_model(model_to_download, params_memory):
     return
 
   repo_url = get_repository_url()
-  if repo_url is not None:
-    model_url = f"{repo_url}Models/{model_to_download}.thneed"
-    download_file(model_path, model_url, params_memory)
-
-    if verify_download(model_path, model_url):
-      print(f"Model {model_to_download} downloaded and verified successfully!")
-      params_memory.put("ModelDownloadProgress", "Downloaded!")
-      params_memory.remove("ModelToDownload")
-    else:
-      handle_verification_failure(model_to_download, model_path, model_url, params_memory)
-  else:
+  if repo_url is None:
     handle_download_error(model_path, "Github and Gitlab are offline...", "Github and Gitlab are offline...", params_memory)
+    return
+
+  model_url = f"{repo_url}Models/{model_to_download}.thneed"
+  download_file(model_path, model_url, params_memory)
+
+  if verify_download(model_path, model_url):
+    print(f"Model {model_to_download} downloaded and verified successfully!")
+    params_memory.put("ModelDownloadProgress", "Downloaded!")
+    params_memory.remove("ModelToDownload")
+  else:
+    handle_verification_failure(model_to_download, model_path, model_url, params_memory)
 
 def fetch_models(url):
   try:
@@ -249,7 +250,7 @@ def download_all_models(params, params_memory):
 
   repo_url = get_repository_url()
   if repo_url is None:
-    print("Repository URL not available.")
+    handle_download_error(model_path, "Github and Gitlab are offline...", "Github and Gitlab are offline...", params_memory)
     return
 
   available_models = params.get("AvailableModels", encoding='utf-8').split(',')
