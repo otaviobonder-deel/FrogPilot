@@ -11,7 +11,7 @@ A_CRUISE_MIN_SPORT = A_CRUISE_MIN / 2
 A_CRUISE_MAX_BP_CUSTOM =       [ 0.,  5., 10., 15., 20., 25., 40.]
 A_CRUISE_MAX_VALS_ECO =        [1.4, 1.2, 1.0, 0.8, 0.6, 0.4, 0.2]
 A_CRUISE_MAX_VALS_SPORT =      [3.0, 2.5, 2.0, 1.0, 0.9, 0.8, 0.6]
-A_CRUISE_MAX_VALS_SPORT_PLUS = [4.0, 3.5, 3.0, 1.0, 0.9, 0.8, 0.6]
+A_CRUISE_MAX_VALS_SPORT_PLUS = [4.0, 3.5, 3.0, 1.5, 1.0, 0.8, 0.6]
 
 def get_max_accel_eco(v_ego):
   return interp(v_ego, A_CRUISE_MAX_BP_CUSTOM, A_CRUISE_MAX_VALS_ECO)
