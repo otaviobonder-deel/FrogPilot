@@ -35,6 +35,10 @@ def run_thread_with_lock(name, lock, target, args):
       thread.start()
       running_threads[name] = thread
 
+def kill_thread(name):
+  if name in running_threads and running_threads[name].is_alive():
+    running_threads[name].kill()
+
 def automatic_update_check(started, params):
   update_available = params.get_bool("UpdaterFetchAvailable")
   update_ready = params.get_bool("UpdateAvailable")
@@ -127,6 +131,10 @@ def frogpilot_thread():
       frogpilot_planner.publish(sm, pm, frogpilot_toggles)
 
       frogpilot_tracking.update(sm['carState'])
+
+    if params_memory.get_bool("CancelModelDownload"):
+      kill_thread("download_model")
+      kill_thread("download_all_models")
 
     model_to_download = params_memory.get("ModelToDownload", encoding='utf-8')
     if model_to_download:
