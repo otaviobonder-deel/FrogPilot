@@ -360,11 +360,10 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s, c
 
     for (int i = 0; i < max_len; ++i) {
       // Some points are out of frame
-      int track_idx = (scene.track_vertices.length() / 2) - i;  // flip idx to start from top
-      if (scene.track_vertices[track_idx].y() < 0 || scene.track_vertices[track_idx].y() > height()) continue;
+      if (scene.track_vertices[i].y() < 0 || scene.track_vertices[i].y() > height()) continue;
 
       // Flip so 0 is bottom of frame
-      float lin_grad_point = (height() - scene.track_vertices[track_idx].y()) / height();
+      float lin_grad_point = (height() - scene.track_vertices[i].y()) / height();
 
       // If acceleration is between -0.25 and 0.25, resort to the theme color
       if (std::abs(acceleration[i]) < 0.25 && (currentHolidayTheme != 0)) {
